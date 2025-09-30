@@ -4,68 +4,84 @@ import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-# Import data (Make sure to parse dates. Consider setting index column to 'date'.)
-df = pd.read_csv('fcc-forum-pageviews.csv', parse_dates=['date'], index_col='date')
+# Importar dados (Certificar-se de analisar datas. Considerar definir coluna de índice como 'date'.)
+df = pd.read_csv('FreeCodeCamp - Python Couse/fcc-forum-pageviews.csv', parse_dates=['date'], index_col='date')
 
-# Clean data
+# Limpar dados
 df = df[(df['value'] >= df['value'].quantile(0.025)) & (df['value'] <= df['value'].quantile(0.975))]
 
 
-def draw_line_plot():
-    # Draw line plot
+def desenhar_grafico_linha():
+    # Desenhar gráfico de linha
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(df.index, df['value'], color='red', linewidth=1)
-    ax.set_title('Daily freeCodeCamp Forum Page Views 5/2016-12/2019')
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Page Views')
+    ax.set_title('Visualizações Diárias da Página do Fórum freeCodeCamp 5/2016-12/2019')
+    ax.set_xlabel('Data')
+    ax.set_ylabel('Visualizações da Página')
     
-    # Save image and return fig (don't change this part)
-    fig.savefig('line_plot.png')
+    # Salvar imagem e retornar fig 
+    fig.savefig('grafico_linha.png')
     return fig
 
-def draw_bar_plot():
-    # Copy and modify data for monthly bar plot
+def desenhar_grafico_barras():
+    # Copiar e modificar dados para gráfico de barras mensais
     df_bar = df.copy()
-    df_bar['year'] = df_bar.index.year
-    df_bar['month'] = df_bar.index.month
-    df_bar = df_bar.groupby(['year', 'month'])['value'].mean().unstack()
+    df_bar['ano'] = df_bar.index.year
+    df_bar['mes'] = df_bar.index.month
+    df_bar = df_bar.groupby(['ano', 'mes'])['value'].mean().unstack()
     
-    # Draw bar plot
+    # Desenhar gráfico de barras
     fig = df_bar.plot(kind='bar', figsize=(12, 6)).figure
-    plt.xlabel('Years')
-    plt.ylabel('Average Page Views')
-    plt.legend(title='Months', labels=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+    plt.xlabel('Anos')
+    plt.ylabel('Visualizações Médias da Página')
+    plt.legend(title='Meses', labels=['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'])
     
-    # Save image and return fig (don't change this part)
-    fig.savefig('bar_plot.png')
+    # Salvar imagem e retornar fig (não alterar esta parte)
+    fig.savefig('grafico_barras.png')
     return fig
 
-def draw_box_plot():
-    # Prepare data for box plots (this part is done!)
+def desenhar_grafico_caixa():
+    # Preparar dados para gráficos de caixa (esta parte está pronta!)
     df_box = df.copy()
     df_box.reset_index(inplace=True)
-    df_box['year'] = [d.year for d in df_box.date]
-    df_box['month'] = [d.strftime('%b') for d in df_box.date]
+    df_box['ano'] = [d.year for d in df_box.date]
+    df_box['mes'] = [d.strftime('%b') for d in df_box.date]
 
-    # Draw box plots (using Seaborn) - Alternative approach to avoid NumPy compatibility issues
+    # Desenhar gráficos de caixa (usando Seaborn) - Abordagem alternativa para evitar problemas de compatibilidade com NumPy
     fig, axes = plt.subplots(1, 2, figsize=(20, 6))
     
-    # Year-wise box plot - using matplotlib boxplot instead of seaborn
-    years = df_box['year'].unique()
-    year_data = [df_box[df_box['year'] == year]['value'].values for year in sorted(years)]
-    axes[0].boxplot(year_data, labels=sorted(years))
-    axes[0].set_title('Year-wise Box Plot (Trend)')
-    axes[0].set_xlabel('Year')
-    axes[0].set_ylabel('Page Views')
+    # Gráfico de caixa por ano - usando boxplot do matplotlib em vez do seaborn
+    anos = df_box['ano'].unique()
+    dados_anos = [df_box[df_box['ano'] == ano]['value'].values for ano in sorted(anos)]
+    axes[0].boxplot(dados_anos, labels=sorted(anos))
+    axes[0].set_title('Gráfico de Caixa por Ano (Tendência)')
+    axes[0].set_xlabel('Ano')
+    axes[0].set_ylabel('Visualizações da Página')
     
-    # Month-wise box plot - using matplotlib boxplot instead of seaborn
-    month_order = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    month_data = [df_box[df_box['month'] == month]['value'].values for month in month_order]
-    axes[1].boxplot(month_data, labels=month_order)
-    axes[1].set_title('Month-wise Box Plot (Seasonality)')
-    axes[1].set_xlabel('Month')
-    axes[1].set_ylabel('Page Views')
+    # Gráfico de caixa por mês - usando boxplot do matplotlib em vez do seaborn
+    ordem_meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    dados_meses = [df_box[df_box['mes'] == mes]['value'].values for mes in ordem_meses]
+    axes[1].boxplot(dados_meses, labels=ordem_meses)
+    axes[1].set_title('Gráfico de Caixa por Mês (Sazonalidade)')
+    axes[1].set_xlabel('Mês')
+    axes[1].set_ylabel('Visualizações da Página')
     
-    # Save image and return fig (don't change this part)
-    fig.savefig('box_plot.png')
+    # Salvar imagem e retornar fig 
+    fig.savefig('grafico_caixa.png')
     return fig
+
+# Executar as funções automaticamente
+if __name__ == "__main__":
+    print("Gerando gráfico de linha...")
+    desenhar_grafico_linha()
+    print("Gráfico de linha salvo como 'grafico_linha.png'")
+    
+    print("Gerando gráfico de barras...")
+    desenhar_grafico_barras()
+    print("Gráfico de barras salvo como 'grafico_barras.png'")
+    
+    print("Gerando gráficos de caixa...")
+    desenhar_grafico_caixa()
+    print("Gráficos de caixa salvos como 'grafico_caixa.png'")
+    
+    print("Todas as visualizações foram concluídas!")
