@@ -5,7 +5,7 @@ import numpy as np
 def calculate(list):
 
     if len(list) != 9:
-        return ValueError("List must contain nine numbers.")
+        raise ValueError("List must contain nine numbers.")
     
     matriz = np.array([list[0:3], list[3:6], list[6:9]]) # Cria matriz array com a lista entregue
 
